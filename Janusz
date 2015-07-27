@@ -1,0 +1,55 @@
+<?php
+
+$slist = array("rolls", "bread");
+    $slist[] = "Nescafe";
+
+        array_push($slist, "milk");
+            var_dump($slist);
+
+          /*  array_splice($slist, 1 , 1);
+            
+            echo "<br>";
+            var_dump($slist);
+
+            
+            unset($slist[1]);
+        $slist = array_values($slist);
+    echo "<br>";
+var_dump($slist);
+           * 
+           */
+
+?>
+
+<!doctype>
+<html>
+    <head>  
+        <title>Shopping List Array</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>
+            
+            <h1>Shopping List</h1>
+            <br><br>
+            <ol>
+                <?php foreach ($slist as $item); ?>
+             
+                
+                <form action="<?= $_SERVER['PHP_SELF'];?>" method="post">
+             
+             </form>   
+            </ol>
+            </ul>
+        </div>
+        <div class='container'>
+            <h3>Add Item</h3>
+            <input type="text" name="item" value="">
+            <br><br>
+            <input type="submit" value="submit">
+            
+        </div>
+    </body>
+    
+</html>
