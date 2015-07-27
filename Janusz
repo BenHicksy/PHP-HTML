@@ -34,21 +34,32 @@ var_dump($slist);
             <h1>Shopping List</h1>
             <br><br>
             <ol>
-                <?php foreach ($slist as $item); ?>
-             
+                <?php foreach ($slist as $item): ?>
+              
+                <li>
+                    <?= $item; ?>
+                </li>
+                    <?php endforeach;  ?>
                 
-                <form action="<?= $_SERVER['PHP_SELF'];?>" method="post">
-             
-             </form>   
+              <!--
+              Here at the moment. adding new item to array. Look at the chapter 5 pdf
+              --!>
+                
+               
             </ol>
             </ul>
         </div>
         <div class='container'>
+             <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post">
+            <input type="hidden" name="slist[] " value="<?= $item ?>"/> 
+            
             <h3>Add Item</h3>
             <input type="text" name="item" value="">
             <br><br>
             <input type="submit" value="submit">
             
+             
+             </form>   
         </div>
     </body>
     
