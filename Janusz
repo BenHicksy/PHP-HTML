@@ -1,24 +1,29 @@
 <?php
+if (isset($_POST['slist'])) {
+    $slist = $_POST['slist'];
+} else {
+    //use original empty list if there is no pre existing array elements.
+    $slist = [];
+}
+//below is errors array
+$errors = array();
 
-$slist = array("rolls", "bread");
-    $slist[] = "Nescafe";
+//delete button
+if (isset($_POST['btndelete']) && $_POST['btndelete'] == 'Delete') {
 
-        array_push($slist, "milk");
-            var_dump($slist);
-
-          /*  array_splice($slist, 1 , 1);
-            
-            echo "<br>";
-            var_dump($slist);
-
-            
-            unset($slist[1]);
-        $slist = array_values($slist);
-    echo "<br>";
-var_dump($slist);
-           * 
-           */
-
+    $id = $_POST ['idxtodelete'];
+    unset($slist[$id]);
+    $slist = array_values($slist);
+}
+//add button code
+if (isset($_POST['btnAdd']) && $_POST['btnAdd'] == "Add Item") {
+    $new_item = $_POST['newitem'];
+    if (empty($new_item)) {
+        $errors[] = 'The new item cannot be empty.';
+    } else {
+        $slist[] = $new_item;
+    }
+}
 ?>
 
 <!doctype>
@@ -30,37 +35,56 @@ var_dump($slist);
     </head>
     <body>
         <div>
-            
+
             <h1>Shopping List</h1>
-            <br><br>
-            <ol>
-                <?php foreach ($slist as $item): ?>
-              
-                <li>
-                    <?= $item; ?>
-                </li>
-                    <?php endforeach;  ?>
-                
-              <!--
-              Here at the moment. adding new item to array. Look at the chapter 5 pdf
-              --!>
-                
-               
-            </ol>
-            </ul>
-        </div>
-        <div class='container'>
-             <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post">
-            <input type="hidden" name="slist[] " value="<?= $item ?>"/> 
-            
-            <h3>Add Item</h3>
-            <input type="text" name="item" value="">
-            <br><br>
-            <input type="submit" value="submit">
-            
-             
-             </form>   
-        </div>
-    </body>
-    
+            <?php if (count($slist) == 0) : ?>
+                <h2>Errors</h2>
+                <ul>
+                    <?php foreach ($errors as $errors) : ?>
+                        <li><?php echo $errors; ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
+            <!-- part 2: the shopping list -->
+            <h2>Items to Buy</h2>
+            <?php if (count($slist) == 0) : ?>
+                <p>There are no items in your shopping list.</p>
+            <?php else: ?>
+                <table>
+                    <?php foreach ($slist as $id => $item) : ?>
+                        <tr>
+                            <td><?php echo ($id + 1) . "."; ?></td>
+                            <td> <?= $item; ?></td>
+                            <td>
+                                <!-- part 2a: delete button form -->
+                                <form action="." method="post">
+                                <input type="hidden" name="idxToDelete" value="<?= $id ?>" />
+                                <input type="submit" name="btnDelete" value="Delete">
+                                </form>
+                            </td>
+                            <?php endforeach; ?>
+                </table>
+            <?php endif; ?>
+        </ol>
+    </ul>
+</div>
+<!-- part 3: the add form -->
+<div class='container'>
+    <h3>Add Item</h3>
+    <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post">
+        <?php foreach ($slist as $item) : ?>
+            <input type="hidden" name="slist[]" value="<?php echo $item; ?>"/>
+        <?php endforeach; ?>
+        <input type="text" name="newitem" id="newitem"/>
+        <label>&nbsp;</label>
+        <br>
+        <input type="submit" name="btnAdd" value="Add Item"/><br />
+        <br><br>
+    </form>
+
+    <h ref>
+</div>
+</body>
+
 </html>
