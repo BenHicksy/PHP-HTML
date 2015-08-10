@@ -1,19 +1,39 @@
 <?php
-if (isset($_POST['slist'])) {
-    $slist = $_POST['slist'];
-} else {
-    //use original empty list if there is no pre existing array elements.
-    $slist = [];
+/*below is code in regards to cookies. You must think of it as going backwards.
+ * Decode from json into base64, then base64 into regular code.*/
+function get_shopping_list() {
+    if (isset($_COOKIE['shopping_list'])) {
+        $slist_json = base64_decode($_COOKIE['shopping_list']);
+        $slist = json_decode($slist_json);
+                return $slist;
+    } else {
+        return [];
+    }
 }
+
+function save_shopping_list($sl){
+    $sl_json = json_encode($sl);
+    $sl_64 = base64_encode($sl_json);
+    setcookie('shopping_list', $sl_64, time() + 60*2, '/');
+}
+
+/* if (isset($_POST['slist'])) {
+  $slist = $_POST['slist'];
+  } else {
+  //use original empty list if there is no pre existing array elements.
+  $slist = [];
+  } */
 //below is errors array
 $errors = array();
-
+$slist = get_shopping_list();
 //delete button
-if (isset($_POST['btndelete']) && $_POST['btndelete'] == 'Delete') {
+if (isset($_POST['btnDelete']) && $_POST['btnDelete'] == 'Delete') {
 
-    $id = $_POST ['idxtodelete'];
-    unset($slist[$id]);
+    $idxs = $_POST ['idxs_to_delete'];
+    foreach ($idxs as $idx)
+        unset($slist[$idx]);
     $slist = array_values($slist);
+    save_shopping_list($slist);
 }
 //add button code
 if (isset($_POST['btnAdd']) && $_POST['btnAdd'] == "Add Item") {
@@ -22,6 +42,7 @@ if (isset($_POST['btnAdd']) && $_POST['btnAdd'] == "Add Item") {
         $errors[] = 'The new item cannot be empty.';
     } else {
         $slist[] = $new_item;
+        save_shopping_list($slist);
     }
 }
 ?>
@@ -37,54 +58,60 @@ if (isset($_POST['btnAdd']) && $_POST['btnAdd'] == "Add Item") {
         <div>
 
             <h1>Shopping List</h1>
-            <?php if (count($slist) == 0) : ?>
+<?php if (count($slist) == 0) : ?>
                 <h2>Errors</h2>
                 <ul>
-                    <?php foreach ($errors as $errors) : ?>
+    <?php foreach ($errors as $errors) : ?>
                         <li><?php echo $errors; ?></li>
-                    <?php endforeach; ?>
+                <?php endforeach; ?>
                 </ul>
-            <?php endif; ?>
+                <?php endif; ?>
 
             <!-- part 2: the shopping list -->
             <h2>Items to Buy</h2>
             <?php if (count($slist) == 0) : ?>
                 <p>There are no items in your shopping list.</p>
-            <?php else: ?>
-                <table>
-                    <?php foreach ($slist as $id => $item) : ?>
-                        <tr>
-                            <td><?php echo ($id + 1) . "."; ?></td>
-                            <td> <?= $item; ?></td>
-                            <td>
-                                <!-- part 2a: delete button form -->
-                                <form action="." method="post">
-                                <input type="hidden" name="idxToDelete" value="<?= $id ?>" />
-                                <input type="submit" name="btnDelete" value="Delete">
-                                </form>
-                            </td>
-                            <?php endforeach; ?>
-                </table>
-            <?php endif; ?>
-        </ol>
-    </ul>
-</div>
-<!-- part 3: the add form -->
-<div class='container'>
-    <h3>Add Item</h3>
-    <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post">
-        <?php foreach ($slist as $item) : ?>
-            <input type="hidden" name="slist[]" value="<?php echo $item; ?>"/>
-        <?php endforeach; ?>
-        <input type="text" name="newitem" id="newitem"/>
-        <label>&nbsp;</label>
-        <br>
-        <input type="submit" name="btnAdd" value="Add Item"/><br />
-        <br><br>
-    </form>
+<?php else: ?>
+                <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post">
+                    <form action="." method="post"> 
+                        <table>
+                <?php foreach ($slist as $id => $item) : ?>
+                                <tr>
+                                    <td><?php echo ($id + 1) . "."; ?></td>
+                                    <td> <?= $item; ?></td>
+                                    <td>
 
-    <h ref>
-</div>
-</body>
+                                        <input type="checkbox" name="idxs_to_delete[]" value="<?= $id ?>" />
+                                        <!-- part 2a: delete button form -->
+
+
+                                    </td>
+    <?php endforeach; ?>
+                        </table>
+
+    <?php foreach ($slist as $item) : ?>
+                            <input type="hidden" name="slist[]" value="<?php echo $item; ?>"/>
+                                <?php endforeach; ?>
+                        <input type="submit" name="btnDelete" value="Delete">
+                    </form>
+                    <?php endif; ?>
+            </form>
+        </div>
+        <!-- part 3: the add form -->
+        <div class='container'>
+            <h3>Add Item</h3>
+            <form acton="." method="post">
+<?php foreach ($slist as $item) : ?>
+                    <input type="hidden" name="slist[]" value="<?php echo $item; ?>"/>
+<?php endforeach; ?>
+                <input type="text" name="newitem" id="newitem"/>
+                <label>&nbsp;</label>
+                <br><br>
+                <input type="submit" name="btnAdd" value="Add Item"/><br/>
+                <br><br>
+            </form>
+            <a href="print.php">Print Me</a>
+        </div>
+    </body>
 
 </html>
